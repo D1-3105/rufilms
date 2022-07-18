@@ -1,0 +1,17 @@
+{
+  "files": {
+    "main.css": "/static/css/main.6a894947.css",
+    "main.js": "/static/js/main.f04b3d32.js",
+    "static/media/european.jpg": "/static/media/european.4cdfecdeb14a634c5c74.jpg",
+    "static/media/asian.jpg": "/static/media/asian.79b7d4ade63a15538dfe.jpg",
+    "static/media/negroid.jpg": "/static/media/negroid.f762dc3918eb81374b8e.jpg",
+    "static/media/sprite.svg": "/static/media/sprite.f41722556b46e12b59ec7cd7339cf674.svg",
+    "index.html": "/index.html",
+    "main.6a894947.css.map": "/static/css/main.6a894947.css.map",
+    "main.f04b3d32.js.map": "/static/js/main.f04b3d32.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.6a894947.css",
+    "static/js/main.f04b3d32.js"
+  ]
+}
