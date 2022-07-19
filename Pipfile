@@ -12,6 +12,7 @@ waitress = "*"
 moviepy = "*"
 psycopg2 = "*"
 django-environ = "*"
+django-cors-headers = "*"
 
 [dev-packages]
 
