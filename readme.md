@@ -5,4 +5,4 @@ RUFILMS_ALLOWED_HOSTS=https://localhost:8000,http://localhost:8000,http://127.0.
 RUFILMS_DEBUG=False
 ##### ADD RUFILMS_FFMPEG_PATH
 ##### To launch celery in test mode windows: celery -A rufilms worker -l info -P gevent
-##### To launch 
+##### To launch redis server in windows: redis-server --port 6379
