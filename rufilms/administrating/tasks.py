@@ -20,8 +20,9 @@ def log(message, path='celery_log'):
 
 @app.task
 def script_reporter(user_cookie):
-    db_messages=Message.objects.filter_new_messages().filter(anonimous_token=user_cookie)
+    db_messages=Message.objects.filter_new_messages().filter(sender__anonimous_token=user_cookie)
     serialized_messages= MessageSerializer(db_messages, many=True).data
+    print(serialized_messages)
     readable_message_serializers=ReadableMessageSerializer(data=serialized_messages, many=True)
     readable_message_serializers.is_valid(raise_exception=True)
     readable_messages=readable_message_serializers.save()

@@ -22,7 +22,7 @@ class ScriptAdmin(admin.ModelAdmin):
 class ButtonAdmin(admin.ModelAdmin):
     form= ButtonForm
 
-
+admin.site.register(models.Sender)
 admin.site.register(models.Message)
 admin.site.register(models.VideoFiles)  # just default admin form for videofile
 

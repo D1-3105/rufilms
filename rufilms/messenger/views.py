@@ -1,10 +1,10 @@
 # rest
 from rest_framework.views import APIView, Response
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny ,BasePermission
 # local
-from .serializers import MessageSerializer, VideoSerializer, ScriptPositionSerializer, ScriptSerializer
+from .serializers import MessageSerializer, VideoSerializer, ScriptPositionSerializer, SenderSerializer
 from . import lang_processor
-from .models import Phrases, Script
+from .models import Phrases, Script, Sender
 from django.db import transaction
 # celery tasks
 from administrating.tasks import script_reporter
@@ -13,8 +13,68 @@ import random
 import string
 
 
-class MessageAPIView(APIView):
+class CookiePermission(BasePermission):
+
+    def has_permission(self, request, view):
+        tok = request.COOKIES.get('anonimous_token')
+        return tok and Sender.objects.filter(anonimous_token=tok).exists()
+
+
+class VideoAPIView(APIView):
+    video_serializer = VideoSerializer
+    phrase_topic=''
+
+    def get(self, request):
+        scheme_pk = Phrases.objects.get(topic=self.phrase_topic).pk
+        try:
+            validated_data=self.validate_video({'scheme_pk':scheme_pk})
+            return Response(data=validated_data, status=200)
+        except:
+            return Response(status=404)
+
+    def validate_video(self, data):
+        serialized = self.video_serializer(data=data)
+        if serialized.is_valid(raise_exception=True):
+            return serialized.validated_data
+
+
+class IntroductionAPIView(VideoAPIView):
     permission_classes = [AllowAny]
+    phrase_topic = 'INTRODUCTION'
+
+
+class AuthAPIView(VideoAPIView):
+    permission_classes = [AllowAny]
+    serializer_class= SenderSerializer
+    phrase_topic = 'AUTH PHRASE'
+
+    @staticmethod
+    def make_anon_cookie():
+        return ''.join([random.choice(string.ascii_letters) for _ in range(25)])
+
+    def post(self, request, format=None):
+        anon_cookie=self.make_anon_cookie()
+        data=request.data.copy()
+        data.update({'anonimous_token':anon_cookie})
+        print('DATA:', data)
+        ser_inited=self.serializer_class(data=data)
+
+        if ser_inited.is_valid():
+            sender_instance=ser_inited.save()
+            response=Response(status=201)
+            response.set_cookie('anonimous_token', anon_cookie)
+            return response
+        else:
+            return Response(data={'error':ser_inited.errors}, status=400)
+
+
+class GreetingAPIView(VideoAPIView):
+    permission_classes = [CookiePermission]
+    phrase_topic = 'greeting'
+
+
+class MessageAPIView(APIView):
+    permission_classes = [CookiePermission]
     message_serializer_class=MessageSerializer
     video_serializer=VideoSerializer
     default_phrase_processor = lang_processor.DefaultProcessor
@@ -46,24 +106,6 @@ class MessageAPIView(APIView):
         return scheme_pk
 
 
-class GreetingAPIView(APIView):
-    permission_classes = [AllowAny]
-    serializer_class= VideoSerializer
-
-    def get_queryset(self):
-        return Phrases.objects.filter(topic='greeting').first()
-
-    def get(self, request):
-        greeting=self.get_queryset()
-        serializer= self.serializer_class(data={'scheme_pk':greeting.pk})
-        if serializer.is_valid():
-            data=serializer.validated_data
-            response=Response(data=data, status=200)
-            response.set_cookie('anonimous_token', ''.join([random.choice(string.ascii_letters) for _ in range(25)]))
-            return response
-        return Response(data={'error':serializer.errors}, status=400)
-
-
 class ScriptAPIView(MessageAPIView):
     default_phrase_processor = lang_processor.ScriptProcessor
 
@@ -73,7 +115,6 @@ class ScriptAPIView(MessageAPIView):
         if scripter.is_valid(raise_exception=True):
             return scripter
 
-    #@transaction.atomic
     def post(self, request):
         sid=transaction.savepoint()  # savepoint to rollback
         try:

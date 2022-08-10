@@ -287,7 +287,7 @@ class Message(models.Model):
                                         related_query_name='messenger_Message_related_Scheme',
                                         on_delete=models.SET_NULL, null=True
                                         )
-    anonimous_token = models.TextField()
+    sender = models.ForeignKey('Sender', on_delete=models.CASCADE, null=True)
     reported = models.BooleanField(default=False)
 
     objects=MessageManager()
@@ -323,3 +323,9 @@ def link_button_to_phrases(**kwargs):
             phrases = Phrases.objects.filter(pk__in=list(pk_set))
             for phrase in phrases:
                 phrase.buttons.remove(instance.pk)
+
+
+class Sender(models.Model):
+    email= models.EmailField()
+    anonimous_token = models.TextField(unique=True)
+    name= models.CharField(max_length=256)

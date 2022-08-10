@@ -4,8 +4,10 @@ from messenger.models import Phrases
 
 class ReadableMessageClass:
 
-    def __init__(self, anonimous_token, msg, detected_scheme):
-        self.cookie=anonimous_token
+    def __init__(self, sender, msg, detected_scheme):
+        self.cookie=sender['anonimous_token']
+        self.user_email=sender.get('email')
+        self.user_name=sender.get('name')
         self.msg=msg
         videos_qs = Phrases.objects.filter_related_videos(detected_scheme)
         subtitles = {
@@ -16,7 +18,7 @@ class ReadableMessageClass:
 
 
 class ReadableMessageSerializer(serializers.Serializer):
-    anonimous_token= serializers.CharField()
+    sender= serializers.DictField()
     msg= serializers.CharField()
     detected_scheme= serializers.IntegerField()
 
@@ -27,5 +29,5 @@ class ReadableMessageSerializer(serializers.Serializer):
         return ReadableMessageClass(**validated_data)
 
     class Meta:
-        fields='anonimous_token','msg','detected_scheme'
+        fields='sender','msg','detected_scheme'
 

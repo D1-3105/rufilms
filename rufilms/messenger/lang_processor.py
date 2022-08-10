@@ -4,7 +4,7 @@ from .models import Phrases
 from .serializers import PhraseSerializer
 
 PREPS=(',','.','!','?','\'','"','\n')
-SYSTEM_NAMES=('plug', 'greeting','END OF SCRIPT')  # this schemes are avoided
+SYSTEM_NAMES=('plug', 'greeting','END OF SCRIPT', 'AUTH PHRASE')  # this schemes are avoided
 SCRIPT_ENDER = 'END OF SCRIPT'
 
 

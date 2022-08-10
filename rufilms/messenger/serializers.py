@@ -1,7 +1,17 @@
-from rest_framework import serializers
+from rest_framework import serializers, exceptions
 from . import models
 from .utils import get_video_len
-from .models import Message
+from .models import Message, Sender
+
+
+class SenderSerializer(serializers.ModelSerializer):
+
+
+    class Meta:
+        fields='name', 'anonimous_token', 'email'
+        model = Sender
+
+
 
 class VideoFileSerializer(serializers.ModelSerializer):
 
@@ -49,22 +59,32 @@ class PhraseSerializer(serializers.ModelSerializer):
 class MessageSerializer(serializers.ModelSerializer):  # allows to
     msg=serializers.CharField()
     detected_scheme = serializers.PrimaryKeyRelatedField(required=False, queryset=models.Phrases.objects.all())
-    anonimous_token= serializers.CharField(required=False)
+    sender= serializers.CharField(required=False)
 
     def validate(self, data):
-        data['anonimous_token']=self.context['request'].COOKIES.get('anonimous_token', 'NO COOKIE')
+        anon_tok=self.context['request'].COOKIES.get('anonimous_token', None)
+        if not anon_tok:
+            raise exceptions.ValidationError(
+                {"anonimous_token":"This cookie required"}
+            )
+        sender_qs=Sender.objects.filter(anonimous_token=anon_tok)
+        if not sender_qs.exists():
+            raise exceptions.ValidationError(
+                {'anonimous_token':'Related object not found'}
+            )
+        data['sender'] = sender_qs.get()
         return data
 
     def to_representation(self, instance):
         data={
-            'msg':instance.msg,
-            'detected_scheme':instance.detected_scheme.pk,
-            'anonimous_token':instance.anonimous_token
+            'msg': instance.msg,
+            'detected_scheme': instance.detected_scheme.pk,
+            'sender': SenderSerializer(instance.sender).data
         }
         return data
 
     class Meta:
-        fields=('msg','detected_scheme','anonimous_token',)
+        fields=('msg','detected_scheme','sender',)
         model=Message
 
 
