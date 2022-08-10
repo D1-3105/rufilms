@@ -152,16 +152,11 @@ FFMPEG_PATH=env('RUFILMS_FFMPEG_PATH', default=r'ffmpeg')
 
 # MAIL SERVER
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_USE_SSL = True
-EMAIL_HOST = 'mail.rufilms.ru'
-EMAIL_PORT = 465
-EMAIL_HOST_PASSWORD = 'xJ7sR3jK3n'
-EMAIL_HOST_USER = 'bot@rufilms.ru'
-
-#Имя сервера входящей почты: mail.rufilms.ru
-#IMAP SSL 993
-#Имя сервера исходящей почты: mail.rufilms.ru
-#SMTP SSL 465
+EMAIL_USE_SSL = env.bool('RUFILMS_EMAIL_USE_SSL', default=True)
+EMAIL_HOST = env("RUFILMS_EMAIL_HOST")
+EMAIL_PORT = env.int('RUFILMS_EMAIL_PORT')
+EMAIL_HOST_PASSWORD = env('RUFILMS_EMAIL_HOST_PASSWORD')
+EMAIL_HOST_USER = env('RUFILMS_EMAIL_HOST_USER')
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
