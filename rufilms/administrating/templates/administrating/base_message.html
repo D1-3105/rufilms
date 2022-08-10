@@ -1,0 +1,15 @@
+<html>
+    <body>
+        <h3>{%block title%}{%endblock title%}</h3>
+        <p>{%block informative_block%}{%endblock informative_block%}</p>
+        {% for message in messages%}
+            <p><font color="green" size="3">{{message.cookie|truncatechars:10}}</font>: - {{message.msg}}</p>
+            {%for key, value in message.bot_answer.items%}
+                {%if key == passed_lang%}
+                    <p><font color="red" size="3">Bot</font>: - {{value}}</p>
+                {%endif%}
+            {% endfor %}
+            <br>
+        {% endfor %}
+    </body>
+</html>

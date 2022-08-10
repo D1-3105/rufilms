@@ -1,7 +1,8 @@
 from django.urls import path
-from .views import MessageView, GreetingView
+from .views import MessageAPIView, GreetingAPIView, ScriptAPIView
 
 urlpatterns=[
-    path('', MessageView.as_view(),name='message'),
-    path('greeting/', GreetingView.as_view(), name='greeting')
+    path('', MessageAPIView.as_view(),name='message'),
+    path('greeting/', GreetingAPIView.as_view(), name='greeting'),
+    path('script/', ScriptAPIView.as_view(), name='script')
 ]

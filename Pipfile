@@ -12,6 +12,10 @@ waitress = "*"
 moviepy = "*"
 psycopg2 = "*"
 django-environ = "*"
+celery = "*"
+gevent = "*"
+redis = "*"
+django-sslserver = "*"
 
 [dev-packages]
 
