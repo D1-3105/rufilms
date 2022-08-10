@@ -28,9 +28,9 @@ SECRET_KEY = env('RUFILMS_SECRET_KEY',default='django-insecure-@c#k0hmk0b2*+kl(%
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env.bool('RUFILMS_DEBUG',default=True)
-
 ALLOWED_HOSTS = env.list('RUFILMS_ALLOWED_HOSTS',default=['*'])
-
+CORS_ALLOWED_ORIGINS = env.list('RUFILMS_CORS_ALLOWED_ORIGINS')
+CSRF_TRUSTED_ORIGINS = env.list('RUFILMS_CSRF_TRUSTED_ORIGINS')
 # Application definition
 
 INSTALLED_APPS = [
@@ -43,10 +43,11 @@ INSTALLED_APPS = [
     # local
     'messenger.apps.MessengerConfig',
     'frontend.apps.FrontendConfig',
+    'administrating.apps.AdministratingConfig',
     # 3d party
     'rest_framework',
+    'sslserver',
     'corsheaders',
-
 ]
 
 MIDDLEWARE = [
@@ -137,7 +138,7 @@ USE_TZ = True
 import os
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR/'build'
-STATICFILES_DIRS = ( os.path.join('build/static'), )
+STATICFILES_DIRS = ( os.path.join('build/static'),)
 
 MEDIA_ROOT=BASE_DIR/'www'/'media'
 STATICFILES_FINDERS=[
@@ -146,15 +147,22 @@ STATICFILES_FINDERS=[
 ]
 
 #
-FFMPEG_PATH=env('RUFILMS_FFMPEG_PATH', default=r'D:\ffmpeg\bin\ffmpeg')
+FFMPEG_PATH=env('RUFILMS_FFMPEG_PATH', default=r'ffmpeg')
 
 
-#
+# MAIL SERVER
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_USE_SSL = True
+EMAIL_HOST = 'mail.rufilms.ru'
+EMAIL_PORT = 465
+EMAIL_HOST_PASSWORD = 'xJ7sR3jK3n'
+EMAIL_HOST_USER = 'bot@rufilms.ru'
 
+#Имя сервера входящей почты: mail.rufilms.ru
+#IMAP SSL 993
+#Имя сервера исходящей почты: mail.rufilms.ru
+#SMTP SSL 465
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-CORS_ALLOWED_ORIGINS = env.list('RUFILMS_CORS_ALLOWED_ORIGINS')
-
-CSRF_TRUSTED_ORIGINS = env.list('RUFILMS_CSRF_TRUSTED_ORIGINS')
