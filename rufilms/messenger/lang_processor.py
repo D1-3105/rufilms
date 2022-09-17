@@ -12,7 +12,6 @@ class DefaultProcessor:
 
     def get_phrases(self):  # count queryset
         big_dict={}
-        print(self.gain_phrases())
         for phrase in self.gain_phrases():
             data_dict = {
                 phrase.pk: sorted(phrase.phrases, key=lambda x: len(x), reverse=True),
