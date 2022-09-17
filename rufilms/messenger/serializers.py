@@ -132,10 +132,12 @@ class VideoSerializer(serializers.Serializer):
             qualities.add(video.quality)
             screens.add(video.screen_size)
             langs.add(video.lang)
-        subtitles = {
-            lang: videos.filter(lang=lang).first().subtitles.text
-            for lang in videos.values_list('lang', flat=True)
-        }
+        subtitles={}
+        for lang in videos.values_list('lang', flat=True):
+            #print({lang: videos.filter(lang=lang).exclude(subtitles=None).first().subtitles.text
+             #       if videos.filter(lang=lang).exclude(subtitles=None)!=None else ''})
+            subtitles.update({lang: videos.filter(lang=lang).exclude(subtitles=None).first().subtitles.text
+                              if videos.filter(lang=lang).exclude(subtitles=None).first()!=None else ''})
         script=models.Phrases.objects.get(pk=data['scheme_pk']).entry_of_scripts.all()
         #
         validated_data = {

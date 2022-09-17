@@ -1,6 +1,6 @@
 from django import forms
 from .models import Subtitle, Script, Phrases, Button
-from django.db.models import Q
+from django.db.models import Q,QuerySet
 
 
 class PhraseForm(forms.ModelForm):
@@ -72,10 +72,13 @@ class RelatedObjectsMixin:
 
 class ScriptForm(forms.ModelForm, RelatedObjectsMixin):
     script_related_phrases = M2MSlugRelatedField(widget=forms.Textarea)
-
+    def __init__(self, *args, **kwargs):
+        if kwargs.get('instance'):  # :)
+            kwargs.get('instance').topics='&'.join(kwargs.get('instance').topics)  # merge phrases list
+        super().__init__(*args,**kwargs)
     class Meta:
         model=Script
-        fields='script_related_phrases', 'script_name'
+        fields='script_related_phrases', 'script_name','topics'
 
     def clean(self):
         cleaned_data=super().clean()

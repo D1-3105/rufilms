@@ -17,6 +17,7 @@ celery = "*"
 gevent = "*"
 redis = "*"
 django-sslserver = "*"
+django-sortedm2m = "*"
 
 [dev-packages]
 

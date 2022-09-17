@@ -47,7 +47,7 @@ class VideoFiles(models.Model):
 
     class Meta:
         constraints=[
-            models.UniqueConstraint(fields=['phrase','screen_size','avatar','quality'],
+            models.UniqueConstraint(fields=['phrase','screen_size','avatar','quality','lang'],
                                     name='unique video-file')
         ]
 
@@ -170,30 +170,20 @@ def link_video_files(**kwargs):
 class Script(models.Model):
     script_related_phrases = models.ManyToManyField(to='Phrases')
     script_name = models.CharField(max_length=30, unique=True)
+    topics = ListField(blank=True, default='')
+
+    def sort_phrases_by_topic(self):
+        topics=self.topics
+        if isinstance(topics, list):
+            topics=topics
+        if isinstance(topics, str):
+            topics=topics.split('&')
+        qs=list(self.script_related_phrases.all())
+        interested_list=sorted(qs, key=lambda p: topics.index(p.topic))
+        return interested_list
 
     def __str__(self):
         return self.script_name
-
-
-@receiver(m2m_changed, sender=Script.script_related_phrases.through)
-def link_script_to_phrases(**kwargs):
-    instance = kwargs.pop('instance', None)
-    pk_set = kwargs.pop('pk_set', None)
-    action = kwargs.pop('action', None)
-    if action == 'post_add':
-        if len(pk_set)>0:
-            first_phrase=Phrases.objects.get(pk=list(pk_set)[0])
-            first_phrase.entry_of_scripts.add(instance.pk)
-    if action == 'post_remove':
-        phrases = Phrases.objects.filter(pk__in=pk_set, entry_of_scripts=instance)
-        for phrase in phrases:
-            phrase.entry_of_scripts.remove(instance.pk)
-        #phrase.save()
-    if action == 'post_clear':
-        if len(pk_set)>0:
-            first_phrase= Phrases.objects.get(pk=list(pk_set)[0])
-            first_phrase.entry_of_scripts.remove(instance.pk)
-        #first_phrase.save()
 
 
 class PhrasesQuerySet(models.QuerySet):

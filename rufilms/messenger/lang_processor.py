@@ -1,7 +1,7 @@
 import numpy as np
 from nltk import edit_distance
 from .models import Phrases
-from .serializers import PhraseSerializer
+from itertools import permutations
 
 PREPS=(',','.','!','?','\'','"','\n')
 SYSTEM_NAMES=('plug', 'greeting','END OF SCRIPT', 'AUTH PHRASE')  # this schemes are avoided
@@ -36,6 +36,14 @@ class DefaultProcessor:
                 new_word+=sym
         return new_word
 
+    @staticmethod
+    def count_edit_distance(phrase, word_buffer):
+        mutations_phrases=[' '.join(i) for i in list(permutations(phrase.split(), len(phrase.split())))]
+        edit_distances = []
+        for mini_phrase in mutations_phrases:
+            edit_distances.append(edit_distance(mini_phrase, word_buffer))
+        return min(edit_distances)
+
     def detect_scheme(self,text:str):
         text=text.lower()  # all words -> lower keys
         schemes = np.array(list(self.get_phrases().keys()))  # key phrases
@@ -56,10 +64,12 @@ class DefaultProcessor:
                                      no_tails[wordpos:(wordpos+len(phrase.split(' '))+1)
                                      if wordpos+len(phrase.split(' '))+1 else len(no_tails)])
                                      # we should watch window+next word
+
                         #print('WB:',word_buffer)
-                    if edit_distance(phrase, word_buffer)<(len(word_buffer)*0.5):
-                        print(word_buffer, phrase, edit_distance(phrase, word_buffer), len(word_buffer)*0.5, sep='/')
-                        phrases_matrix[pos]=edit_distance(phrase, word_buffer)  # [0,0,0]->[0,1,0]
+                    if self.count_edit_distance(phrase, word_buffer)<(len(word_buffer)*0.5):
+                        print(word_buffer, phrase, self.count_edit_distance(phrase, word_buffer),
+                              len(word_buffer)*0.5, sep='/')
+                        phrases_matrix[pos]=self.count_edit_distance(phrase, word_buffer)  # [0,0,0]->[0,1,0]
                         break
         answer=None
         if len(schemes)>0:
@@ -72,5 +82,14 @@ class DefaultProcessor:
 class ScriptProcessor(DefaultProcessor):
 
     def gain_phrases(self):
-        print('SCRIPT GOOD')
         return Phrases.objects.filter(topic=SCRIPT_ENDER)
+
+
+class ScriptCustomProcessor(DefaultProcessor):
+
+    def __init__(self, phrases_pks):
+        super().__init__()
+        self.phrases_pks=phrases_pks
+
+    def gain_phrases(self):
+        return Phrases.objects.filter(pk__in=self.phrases_pks)
