@@ -25,7 +25,7 @@ djangorestframework==3.13.1; python_version >= '3.6'
 idna==3.3; python_version >= '3.5'
 imageio-ffmpeg==0.4.7; python_version >= '3.5'
 imageio==2.21.0; python_full_version >= '3.7.0'
-joblib==1.1.0; python_version >= '3.6'
+joblib==1.2.0; python_version >= '3.6'
 kombu==5.2.4; python_full_version >= '3.7.0'
 moviepy==1.0.3
 nltk==3.7
