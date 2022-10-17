@@ -1,0 +1,18 @@
+{
+  "files": {
+    "main.css": "/static/css/main.27f535e8.css",
+    "main.js": "/static/js/main.39ebb1ed.js",
+    "static/media/european.jpg": "/static/media/european.c5eddc9eae891d16c3a6.jpg",
+    "static/media/asian.jpg": "/static/media/asian.b0f0402a0a210844b151.jpg",
+    "static/media/european_female.jpg": "/static/media/european_female.8bd60b5070a0f2ca72c1.jpg",
+    "static/media/negroid.jpg": "/static/media/negroid.23a3e468e5c97ae1db37.jpg",
+    "static/media/sprite.svg": "/static/media/sprite.670db24ab6be633db58842a5fdd01cdf.svg",
+    "index.html": "/index.html",
+    "main.27f535e8.css.map": "/static/css/main.27f535e8.css.map",
+    "main.39ebb1ed.js.map": "/static/js/main.39ebb1ed.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.27f535e8.css",
+    "static/js/main.39ebb1ed.js"
+  ]
+}
